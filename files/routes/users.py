@@ -1023,23 +1023,23 @@ def u_username_comments(username, v=None):
 
 	if u.reserved:
 		if request.headers.get("Authorization") or request.headers.get("xhr") or request.path.endswith(".json"):
-			return {"error": f"That username is reserved for: {u.reserved}"}
+			return {"error": f"That username is reserved for: {u.reserved}"}, 418
 		return render_template("userpage_reserved.html", u=u, v=v)
 
 
 	if u.is_private and (not v or (v.id != u.id and v.admin_level < 2 and not v.eye)):
 		if request.headers.get("Authorization") or request.headers.get("xhr") or request.path.endswith(".json"):
-			return {"error": "That userpage is private"}
+			return {"error": "That userpage is private"}, 403
 		return render_template("userpage_private.html", u=u, v=v)
 
 	if v and hasattr(u, 'is_blocking') and u.is_blocking:
 		if request.headers.get("Authorization") or request.headers.get("xhr") or request.path.endswith(".json"):
-			return {"error": f"You are blocking @{u.username}."}
+			return {"error": f"You are blocking @{u.username}."}, 403
 		return render_template("userpage_blocking.html", u=u, v=v)
 
 	if v and v.admin_level < 2 and hasattr(u, 'is_blocked') and u.is_blocked:
 		if request.headers.get("Authorization") or request.headers.get("xhr") or request.path.endswith(".json"):
-			return {"error": "This person is blocking you."}
+			return {"error": "This person is blocking you."}, 403
 		return render_template("userpage_blocked.html", u=u, v=v)
 
 
