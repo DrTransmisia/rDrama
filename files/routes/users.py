@@ -906,8 +906,11 @@ def visitors(v):
 @auth_desired
 def u_username(username, v=None):
 
-	if not v and not request.path.startswith('/logged_out'): return redirect(f"/logged_out{request.full_path.rstrip('?')}")
-	if v and request.path.startswith('/logged_out'): return redirect(request.full_path.replace('/logged_out','').rstrip('?'))
+	if not v and not request.path.startswith('/logged_out'):
+		return redirect(f"/logged_out{request.full_path.rstrip('?')}")
+
+	if v and request.path.startswith('/logged_out'):
+		return redirect(request.full_path.replace('/logged_out','').rstrip('?'))
 
 	u = get_user(username, v=v, rendered=True)
 
@@ -921,7 +924,9 @@ def u_username(username, v=None):
 		return redirect(SITE_FULL + request.full_path.replace(username, u.username)[:-1])
 
 	if u.reserved:
-		if request.headers.get("Authorization") or request.headers.get("xhr"): return {"error": f"That username is reserved for: {u.reserved}"}
+		if request.headers.get("Authorization") or request.headers.get("xhr"):
+			return {"error": f"That username is reserved for: {u.reserved}"}, 418
+
 		return render_template("userpage_reserved.html", u=u, v=v)
 
 	if u.shadowbanned and not (v and v.admin_level >= 2) and not (v and v.id == u.id):
@@ -937,17 +942,23 @@ def u_username(username, v=None):
 
 		
 	if u.is_private and (not v or (v.id != u.id and v.admin_level < 2 and not v.eye)):
-		if request.headers.get("Authorization") or request.headers.get("xhr"): return {"error": "That userpage is private"}
+		if request.headers.get("Authorization") or request.headers.get("xhr"):
+			return {"error": "That userpage is private"}, 403
+
 		return render_template("userpage_private.html", u=u, v=v)
 
 	
 	if v and hasattr(u, 'is_blocking') and u.is_blocking:
-		if request.headers.get("Authorization") or request.headers.get("xhr"): return {"error": f"You are blocking @{u.username}."}
+		if request.headers.get("Authorization") or request.headers.get("xhr"):
+			return {"error": f"You are blocking @{u.username}."}, 403
+
 		return render_template("userpage_blocking.html", u=u, v=v)
 
 
 	if v and v.admin_level < 2 and hasattr(u, 'is_blocked') and u.is_blocked:
-		if request.headers.get("Authorization") or request.headers.get("xhr"): return {"error": "This person is blocking you."}
+		if request.headers.get("Authorization") or request.headers.get("xhr"):
+			return {"error": "This person is blocking you."}, 403
+			
 		return render_template("userpage_blocked.html", u=u, v=v)
 
 
