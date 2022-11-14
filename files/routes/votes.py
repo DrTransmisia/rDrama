@@ -158,7 +158,7 @@ def vote_post_comment(target_id, new, v, cls, vote_cls):
 				x += target.body_html.count('<a href="/images/')
 				mul = 1 + x/20
 
-		mul = min(mul, 2)
+		mul = mul if target.sub == 'schizocel' else min(mul, 2)
 		target.realupvotes *= mul
 
 	g.db.add(target)
