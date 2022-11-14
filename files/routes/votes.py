@@ -149,7 +149,7 @@ def vote_post_comment(target_id, new, v, cls, vote_cls):
 		elif cls == Submission:
 			if target.domain.endswith('.win') or target.domain in BOOSTED_SITES or target.sub in BOOSTED_HOLES:
 				mul = 2
-			elif target.sub = 'schizocel':
+			elif target.sub == 'schizocel':
 				mul = 100
 			elif target.sub and target.sub not in ('space','istory','dino','slackernews'):
 				mul = 0.7
